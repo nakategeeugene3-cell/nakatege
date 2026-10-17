@@ -4,6 +4,8 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "KING SHIPPING",
   description: "Le luxe livré chez vous, au prix du roi.",
+  manifest: "/manifest.json",
+  themeColor: "#FFD700",
 };
 
 export default function RootLayout({
@@ -13,7 +15,18 @@ export default function RootLayout({
 }) {
   return (
     <html lang="fr">
-      <body>{children}</body>
+      <head>
+        <link rel="manifest" href="/manifest.json" />
+        <meta name="theme-color" content="#FFD700" />
+      </head>
+      <body>
+        {children}
+        <script dangerouslySetInnerHTML={{__html:`
+          if('serviceWorker' in navigator){
+            window.addEventListener('load',()=>{navigator.serviceWorker.register('/sw.js').catch(()=>{});});
+          }
+        `}} />
+      </body>
     </html>
   );
 }
