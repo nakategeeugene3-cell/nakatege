@@ -1,9 +1,19 @@
-import type { Metadata } from "next"
+import type { Metadata } from "next";
+import "./globals.css";
 
 export const metadata: Metadata = {
-  verification: {
-    other: {
-      monetag: "86a25aae14217f423b4aee6a732b4256s",
-    },
-  },
+  title: "KING SHIPPING",
+  description: "Le luxe livré chez vous, au prix du roi.",
+};
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <html lang="fr">
+      <body>{children}</body>
+    </html>
+  );
 }
