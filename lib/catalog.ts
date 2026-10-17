@@ -1,81 +1,53 @@
 export type Product = {
-  id: string;
-  name: string;
-  category: string;
-  price: number;
-  image: string;
-};
+  id: number
+  name: string
+  brand: string
+  category: string
+  price: number
+  image: string
+  desc: string
+}
 
-type Category = {
-  name: string;
-  image: string;
-  products: [string, number][];
-};
-
-const categories: Category[] = [
-  {
-    name: "Téléphones & tablettes",
-    image: "photo-1511707171634-5f897ff02aa9",
-    products: [["Smartphone Nova 128 Go", 115], ["Smartphone Nova Pro", 168], ["Tablette Horizon 10 pouces", 142], ["Écouteurs sans fil AirBeat", 18], ["Coque renforcée Crystal", 6], ["Chargeur rapide 30 W", 12], ["Montre connectée Pulse", 31], ["Power bank 20 000 mAh", 25], ["Support téléphone magnétique", 9], ["Écran portable 15 pouces", 155]],
-  },
-  {
-    name: "Mode & vêtements",
-    image: "photo-1483985988355-763728e1935b",
-    products: [["Veste urbaine Signature", 46], ["Ensemble deux pièces Élégance", 32], ["Robe de soirée Lumière", 38], ["Chemise Oxford classique", 21], ["Sneakers Street One", 42], ["Sac à main Atelier", 34], ["Pantalon cargo Explorer", 27], ["Polo essentiel en coton", 16], ["Veste denim indigo", 39], ["Lunettes de soleil Eclipse", 14]],
-  },
-  {
-    name: "Maison & décoration",
-    image: "photo-1616486338812-3dadae4b4ace",
-    products: [["Lampe de table Halo", 29], ["Miroir mural Arco", 43], ["Plaid tissé douceur", 22], ["Ensemble de vases Terra", 19], ["Horloge murale minimaliste", 24], ["Étagère murale Loft", 36], ["Coussin décoratif Velours", 13], ["Tapis contemporain 160 × 230", 74], ["Diffuseur d'ambiance", 17], ["Organisateur de bureau", 15]],
-  },
-  {
-    name: "Beauté & bien-être",
-    image: "photo-1596462502278-27bfdc403348",
-    products: [["Sèche-cheveux Ionic Pro", 35], ["Brosse lissante Silk", 27], ["Miroir LED grossissant", 19], ["Trousse beauté Voyage", 12], ["Diffuseur d'huiles essentielles", 23], ["Appareil de massage facial", 31], ["Kit manucure Studio", 21], ["Brosse nettoyante visage", 16], ["Pèse-personne connecté", 24], ["Rasoir électrique Compact", 28]],
-  },
-  {
-    name: "Électronique & audio",
-    image: "photo-1498049794561-7780e7231661",
-    products: [["Casque Bluetooth Studio", 38], ["Enceinte portable Bass", 29], ["Projecteur cinéma Mini", 88], ["Clavier mécanique Nova", 45], ["Souris sans fil Precision", 19], ["Webcam HD 1080p", 27], ["Microphone USB Creator", 41], ["Routeur Wi-Fi double bande", 35], ["Caméra sport 4K", 63], ["Chargeur solaire pliable", 32]],
-  },
-  {
-    name: "Bébé & enfants",
-    image: "photo-1516627145497-ae6968895b74",
-    products: [["Poussette compacte City", 128], ["Sac à langer Nomade", 34], ["Chaise haute évolutive", 79], ["Veilleuse Lune", 18], ["Tapis d'éveil Safari", 42], ["Porte-bébé ergonomique", 39], ["Set repas en silicone", 16], ["Barrière de sécurité", 33], ["Jouet de construction créatif", 25], ["Baignoire pliable bébé", 29]],
-  },
-  {
-    name: "Sport & plein air",
-    image: "photo-1461896836934-ffe607ba8211",
-    products: [["Tapis de yoga Balance", 24], ["Haltères ajustables 20 kg", 58], ["Sac de sport Active", 29], ["Montre sport GPS", 75], ["Bande élastique Pro Set", 14], ["Gourde isotherme 1 L", 17], ["Corde à sauter Speed", 11], ["Tente deux places Trek", 86], ["Gants de fitness Grip", 13], ["Vélo d'appartement compact", 189]],
-  },
-  {
-    name: "Accessoires & bijoux",
-    image: "photo-1611652022419-a9419f74343d",
-    products: [["Montre classique Meridian", 48], ["Bracelet acier Signature", 16], ["Portefeuille cuir urbain", 23], ["Ceinture réversible", 18], ["Collier chaîne dorée", 14], ["Sac bandoulière Metro", 37], ["Étui cartes minimaliste", 11], ["Boucles d'oreilles Halo", 13], ["Sac à dos commuter", 42], ["Porte-clés cuir gravé", 8]],
-  },
-  {
-    name: "Cuisine & électroménager",
-    image: "photo-1556911220-e15b29be8c8f",
-    products: [["Blender multifonction Fresh", 49], ["Friteuse sans huile 5 L", 86], ["Machine à café Barista", 94], ["Bouilloire inox 1,7 L", 27], ["Balance de cuisine digitale", 14], ["Robot multifonction Chef", 119], ["Set de casseroles 8 pièces", 65], ["Grille-pain deux fentes", 22], ["Cuiseur à riz familial", 36], ["Mousseur à lait électrique", 16]],
-  },
-  {
-    name: "Auto & moto",
-    image: "photo-1492144534655-ae79c964c9d7",
-    products: [["Caméra embarquée RoadEye", 54], ["Compresseur portable 12 V", 39], ["Support téléphone voiture", 15], ["Kit nettoyage automobile", 23], ["Chargeur voiture USB-C", 13], ["Couvre-siège universel", 31], ["Démarreur portable auto", 68], ["Lampe LED atelier", 21], ["Housse moto imperméable", 28], ["Aspirateur auto compact", 34]],
-  },
+export const catalog: Product[] = [
+  {id:1,name:"iPhone 15 Pro Max Noir #1",brand:"Apple",category:"Electronique",price:1199,image:"https://picsum.photos/seed/KING1/400/400",desc:"Apple iPhone 15 Pro Max"},
+  {id:2,name:"Samsung S24 Ultra Blanc #2",brand:"Samsung",category:"Electronique",price:1099,image:"https://picsum.photos/seed/KING2/400/400",desc:"Samsung S24 Ultra"},
+  {id:3,name:"MacBook Pro M3 Bleu #3",brand:"Apple",category:"Electronique",price:1999,image:"https://picsum.photos/seed/KING3/400/400",desc:"Apple MacBook Pro M3"},
+  {id:4,name:"HP Pavilion 15 Rouge #4",brand:"HP",category:"Electronique",price:899,image:"https://picsum.photos/seed/KING4/400/400",desc:"HP Pavilion 15"},
+  {id:5,name:"Dell XPS 13 Gold #5",brand:"Dell",category:"Electronique",price:1299,image:"https://picsum.photos/seed/KING5/400/400",desc:"Dell XPS 13"},
+  {id:6,name:"Lenovo ThinkPad Pro #6",brand:"Lenovo",category:"Electronique",price:1399,image:"https://picsum.photos/seed/KING6/400/400",desc:"Lenovo ThinkPad"},
+  {id:7,name:"PS5 Max #7",brand:"Sony",category:"Electronique",price:499,image:"https://picsum.photos/seed/KING7/400/400",desc:"Sony PS5"},
+  {id:8,name:"Xbox Series X Gold #8",brand:"Microsoft",category:"Electronique",price:499,image:"https://picsum.photos/seed/KING8/400/400",desc:"Microsoft Xbox"},
+  {id:9,name:"JBL Flip 6 Lite #9",brand:"JBL",category:"Electronique",price:129,image:"https://picsum.photos/seed/KING9/400/400",desc:"JBL Flip 6"},
+  {id:10,name:"Sony WH-1000XM5 Noir #10",brand:"Sony",category:"Electronique",price:349,image:"https://picsum.photos/seed/KING10/400/400",desc:"Sony WH-1000XM5"},
+  {id:11,name:"AirPods Pro 2 Blanc #11",brand:"Apple",category:"Electronique",price:249,image:"https://picsum.photos/seed/KING11/400/400",desc:"Apple AirPods Pro 2"},
+  {id:12,name:"Samsung QLED 65 Bleu #12",brand:"Samsung",category:"Electronique",price:799,image:"https://picsum.photos/seed/KING12/400/400",desc:"Samsung QLED"},
+  {id:13,name:"Canon EOS R6 Rouge #13",brand:"Canon",category:"Electronique",price:2499,image:"https://picsum.photos/seed/KING13/400/400",desc:"Canon EOS R6"},
+  {id:14,name:"GoPro Hero 12 2024 #14",brand:"GoPro",category:"Electronique",price:399,image:"https://picsum.photos/seed/KING14/400/400",desc:"GoPro Hero 12"},
+  {id:15,name:"Apple Watch 9 Pro #15",brand:"Apple",category:"Electronique",price:399,image:"https://picsum.photos/seed/KING15/400/400",desc:"Apple Watch 9"},
+  {id:16,name:"iPad Air M2 Max #16",brand:"Apple",category:"Electronique",price:599,image:"https://picsum.photos/seed/KING16/400/400",desc:"Apple iPad Air M2"},
+  {id:17,name:"Asus ROG Gold #17",brand:"Asus",category:"Electronique",price:1499,image:"https://picsum.photos/seed/KING17/400/400",desc:"Asus ROG"},
+  {id:18,name:"Bose QC Lite #18",brand:"Bose",category:"Electronique",price:329,image:"https://picsum.photos/seed/KING18/400/400",desc:"Bose QC"},
+  {id:19,name:"Switch OLED Noir #19",brand:"Nintendo",category:"Electronique",price:349,image:"https://picsum.photos/seed/KING19/400/400",desc:"Nintendo Switch"},
+  {id:20,name:"HP LaserJet Blanc #20",brand:"HP",category:"Electronique",price:199,image:"https://picsum.photos/seed/KING20/400/400",desc:"HP LaserJet"},
+  {id:21,name:"Nike Air Max 270 Bleu #21",brand:"Nike",category:"Mode",price:150,image:"https://picsum.photos/seed/KING21/400/400",desc:"Nike Air Max 270"},
+  {id:22,name:"Adidas Samba Rouge #22",brand:"Adidas",category:"Mode",price:120,image:"https://picsum.photos/seed/KING22/400/400",desc:"Adidas Samba"},
+  {id:23,name:"Puma RS-X 2024 #23",brand:"Puma",category:"Mode",price:110,image:"https://picsum.photos/seed/KING23/400/400",desc:"Puma RS-X"},
+  {id:24,name:"Zara Blazer Pro #24",brand:"Zara",category:"Mode",price:89,image:"https://picsum.photos/seed/KING24/400/400",desc:"Zara Blazer"},
+  {id:25,name:"Levis 501 Max #25",brand:"Levis",category:"Mode",price:69,image:"https://picsum.photos/seed/KING25/400/400",desc:"Levis 501"},
+  {id:26,name:"Gucci Sac Gold #26",brand:"Gucci",category:"Mode",price:1290,image:"https://picsum.photos/seed/KING26/400/400",desc:"Gucci Sac"},
+  {id:27,name:"Jordan 1 Lite #27",brand:"Nike",category:"Mode",price:180,image:"https://picsum.photos/seed/KING27/400/400",desc:"Jordan 1"},
+  {id:28,name:"Ultraboost Noir #28",brand:"Adidas",category:"Mode",price:190,image:"https://picsum.photos/seed/KING28/400/400",desc:"Adidas Ultraboost"},
+  {id:29,name:"H&M Hoodie Blanc #29",brand:"H&M",category:"Mode",price:35,image:"https://picsum.photos/seed/KING29/400/400",desc:"H&M Hoodie"},
+  {id:30,name:"Lacoste Polo Bleu #30",brand:"Lacoste",category:"Mode",price:99,image:"https://picsum.photos/seed/KING30/400/400",desc:"Lacoste Polo"},
+  {id:31,name:"Canape 3P Rouge #31",brand:"IKEA",category:"Maison",price:499,image:"https://picsum.photos/seed/KING31/400/400",desc:"IKEA Canape"},
+  {id:32,name:"Table Chene 2024 #32",brand:"IKEA",category:"Maison",price:149,image:"https://picsum.photos/seed/KING32/400/400",desc:"Table Chene"},
+  {id:33,name:"Frigo Samsung Pro #33",brand:"Samsung",category:"Maison",price:699,image:"https://picsum.photos/seed/KING33/400/400",desc:"Frigo Samsung"},
+  {id:34,name:"Dyson V15 Max #34",brand:"Dyson",category:"Maison",price:599,image:"https://picsum.photos/seed/KING34/400/400",desc:"Dyson V15"},
+  {id:35,name:"Dior Sauvage Gold #35",brand:"Dior",category:"Beaute",price:120,image:"https://picsum.photos/seed/KING35/400/400",desc:"Dior Sauvage"},
+  {id:36,name:"VTT BTwin Lite #36",brand:"BTwin",category:"Sport",price:349,image:"https://picsum.photos/seed/KING36/400/400",desc:"VTT BTwin"},
 ];
 
-export const catalog: Product[] = categories.flatMap((category, categoryIndex) =>
-  category.products.map(([name, price], productIndex) => ({
-    id: `${categoryIndex + 1}-${productIndex + 1}`,
-    name,
-    category: category.name,
-    price,
-    image: `https://images.unsplash.com/${category.image}?auto=format&fit=crop&w=760&q=82`,
-  })),
-);
-
-export const categoryNames = categories.map(({ name }) => name);
+export const categoryNames = ["Electronique","Mode","Maison","Beaute","Sport"];
 
 export function calculatePrice(price: number, weightKg: number) {
   const adjustedPrice = price * 1.365;
