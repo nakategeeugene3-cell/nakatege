@@ -1,28 +1,38 @@
 "use client"
-import { useState, useMemo } from "react"
-import { catalog, categoryNames } from "@/lib/catalog"
+import { useState, useMemo, useEffect } from "react"
+import { catalog as baseCatalog } from "@/lib/catalog"
+
+type AnyProduct = any
 
 export default function Storefront(){
-  const [cat,setCat]=useState("Électronique")
-  const [sub,setSub]=useState<string>("All")
-  const [search,setSearch]=useState("")
+  const [allProducts,setAllProducts]=useState<AnyProduct[]>(baseCatalog)
+  const [cat,setCat]=useState("Autre")
   const [show,setShow]=useState(20)
-  const [selectedVideo,setSelectedVideo]=useState<string | null>(null)
-  const [currency,setCurrency]=useState("USD")
+  const [search,setSearch]=useState("")
 
-  const rates:any={USD:{s:"$",r:1},EUR:{s:"€",r:0.92},CDF:{s:"FC",r:2850},XOF:{s:"FCFA",r:605},KSH:{s:"KSh",r:129}}
+  useEffect(()=>{
+    const saved = localStorage.getItem("king_store_autre")
+    if(saved){
+      try{
+        const autreProducts = JSON.parse(saved).map((p:any)=>({...p, subCategory:"Autre", brand:"KING", rating:"5.0", reviews:1, video:"", price:p.priceUSD*129}))
+        setAllProducts([...autreProducts, ...baseCatalog])
+      }catch{}
+    }
+  },[])
+
+  const categoryNames = ["Autre","Électronique","Électroménager","Éclairage","Construction","Habillement & Maison","Voitures & Motos","Cosmétiques & Soins","Matériel Scolaire & Ménage"]
 
   const filtered = useMemo(()=>{
-    let f=catalog;
-    if(search) f=f.filter(p=>p.name.toLowerCase().includes(search.toLowerCase()));
+    let f=allProducts
+    if(search) f=f.filter((p:any)=>p.name.toLowerCase().includes(search.toLowerCase()))
     else {
-      f=f.filter(p=>p.category===cat);
-      if(sub!=="All") f=f.filter(p=>p.subCategory===sub);
+      if(cat==="Autre") f=f.filter((p:any)=>p.category==="Autre" || p.subCategory==="Autre")
+      else f=f.filter((p:any)=>p.category===cat)
     }
-    return f;
-  },[cat,sub,search]);
+    return f
+  },[cat,search,allProducts])
 
-  const subs = useMemo(()=> search ? [] : [...new Set(catalog.filter(p=>p.category===cat).map(p=>p.subCategory))], [cat,search]);
+  const isAutreEmpty = cat==="Autre" && filtered.length===0
 
   return(
     <div className="min-h-screen bg-[#f5f5f5] text-black max-w-[500px] mx-auto pb-20">
@@ -30,55 +40,44 @@ export default function Storefront(){
         <div className="p-2 flex gap-2">
           <div className="flex-1 flex items-center gap-2 bg-[#f2f2f2] rounded-full px-3 py-2">
             <span>🔍</span>
-            <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Search iPhone, Toyota, Gel..." className="flex-1 bg-transparent outline-none text-sm" />
+            <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Search..." className="flex-1 bg-transparent outline-none text-sm" />
           </div>
-          <select value={currency} onChange={e=>setCurrency(e.target.value)} className="bg-black text-yellow-400 text-xs font-bold px-2 rounded-full">
-            <option value="USD">$ USD</option><option value="EUR">€ EUR</option><option value="CDF">FC CDF</option><option value="XOF">FCFA</option><option value="KSH">KSh</option>
-          </select>
+          <a href="/admin" className="bg-yellow-400 text-black text-xs font-black px-3 py-2 rounded-full flex items-center">+ PUBLIER</a>
         </div>
         <div className="flex gap-2 overflow-x-auto px-2 py-2">
           {categoryNames.map(c=>(
-            <button key={c} onClick={()=>{setCat(c); setSub("All"); setShow(20)}} className={`whitespace-nowrap text-[12px] px-3 py-1 rounded-full border ${cat===c?"bg-black text-white border-black":"bg-white text-gray-600"}`}>{c}</button>
+            <button key={c} onClick={()=>{setCat(c); setShow(20)}} className={`whitespace-nowrap text-[12px] px-3 py-1.5 rounded-full border font-bold ${cat===c?"bg-black text-yellow-400 border-black":"bg-white text-gray-600"}`}>{c} {c==="Autre" ? `(${allProducts.filter((p:any)=>p.category==="Autre"||p.subCategory==="Autre").length})` : ""}</button>
           ))}
         </div>
-        {subs.length>0 && (
-          <div className="flex gap-2 overflow-x-auto px-2 pb-2">
-            <button onClick={()=>setSub("All")} className={`text-[11px] px-2 py-1 rounded ${sub==="All"?"bg-yellow-400 text-black font-bold":"bg-gray-100"}`}>All</button>
-            {subs.map(s=>(
-              <button key={s} onClick={()=>{setSub(s); setShow(20)}} className={`whitespace-nowrap text-[11px] px-2 py-1 rounded ${sub===s?"bg-yellow-400 text-black font-bold":"bg-gray-100"}`}>{s}</button>
-            ))}
-          </div>
-        )}
       </div>
 
-      <div className="p-2 bg-yellow-50 text-[10px]">💲 Prix en DOLLARS ${" "} | {filtered.length.toLocaleString()} produits | Converti: {rates[currency].s}</div>
+      <div className="bg-black text-yellow-400 p-2 text-[11px] font-bold flex justify-between">
+        <span>👑 CATÉGORIE: {cat.toUpperCase()} - ${" "} DOLLAR</span>
+        <span>{filtered.length} produits</span>
+      </div>
 
-      <div className="grid grid-cols-2 gap-[1px] bg-[#e0e0e0]">
-        {filtered.slice(0,show).map(p=>(
-          <div key={p.id} className="bg-white p-2">
-            <img src={p.image} alt={p.name} className="w-full h-[140px] object-cover rounded" />
-            <p className="text-[11px] mt-1 line-clamp-2 h-8">{p.name}</p>
-            <p className="font-black text-[14px] mt-1">{rates[currency].s} {(p.priceUSD*rates[currency].r).toLocaleString()} <span className="text-[10px] font-normal text-gray-400">${p.priceUSD}</span></p>
-            <p className="text-[10px] text-orange-500">★ {p.rating} ({p.reviews})</p>
-            <div className="flex gap-1 mt-1">
-              <button onClick={()=>setSelectedVideo(p.video)} className="flex-1 bg-black text-white text-[10px] py-1 rounded">▶ Vidéo</button>
-              <button className="flex-1 bg-yellow-400 text-black text-[10px] font-bold py-1 rounded">+ Panier</button>
+      {isAutreEmpty ? (
+        <div className="bg-white m-3 p-10 rounded-xl text-center">
+          <p className="text-5xl mb-3">📦</p>
+          <p className="font-black text-sm">Catégorie AUTRE vide</p>
+          <p className="text-xs text-gray-500 mt-2">C'est toi qui publies ici KING!<br/>Clique en haut + PUBLIER pour ajouter ton premier produit.</p>
+          <a href="/admin" className="inline-block mt-4 bg-yellow-400 text-black font-black px-6 py-3 rounded-xl text-sm">+ PUBLIER MON PREMIER PRODUIT</a>
+        </div>
+      ) : (
+        <div className="grid grid-cols-2 gap-[1px] bg-[#e0e0e0]">
+          {filtered.slice(0,show).map((p:any)=>(
+            <div key={p.id} className="bg-white p-2">
+              <img src={p.image} alt={p.name} className="w-full h-[140px] object-cover rounded" />
+              <p className="text-[10px] text-gray-400 uppercase">{p.category}</p>
+              <p className="text-[11px] mt-1 line-clamp-2 h-8 font-bold">{p.name}</p>
+              <p className="font-black text-[14px] mt-1">$ {(p.priceUSD || p.price/129 || 0).toFixed ? `$ ${(p.priceUSD||p.price/129).toFixed(2)}` : `$ ${p.priceUSD}`}</p>
+              <button className="w-full mt-2 bg-yellow-400 text-black text-[11px] font-bold py-1.5 rounded">+ Ajouter</button>
             </div>
-          </div>
-        ))}
-      </div>
-
-      {filtered.length>show && <div className="flex justify-center p-4 bg-white"><button onClick={()=>setShow(s=>s+40)} className="border px-6 py-2 rounded-full text-sm">Voir plus ({filtered.length-show})</button></div>}
-
-      {selectedVideo && (
-        <div className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4">
-          <div className="bg-white rounded-xl overflow-hidden w-full max-w-[400px]">
-            <div className="p-2 flex justify-between"><p className="text-xs font-bold">Pub Vidéo - KING ADS</p><button onClick={()=>setSelectedVideo(null)} className="text-xl">✕</button></div>
-            <iframe src={selectedVideo} className="w-full h-[220px]" allowFullScreen />
-            <div className="p-3 text-[11px]">Cette vidéo génère de l'argent via YouTube Ads / AdMob. Tu remplaceras par tes vidéos produits.</div>
-          </div>
+          ))}
         </div>
       )}
+
+      {filtered.length>show && <div className="flex justify-center p-4 bg-white"><button onClick={()=>setShow(s=>s+40)} className="border px-6 py-2 rounded-full text-sm">Voir plus ({filtered.length-show})</button></div>}
     </div>
   )
 }
