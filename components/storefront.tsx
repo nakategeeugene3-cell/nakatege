@@ -1,83 +1,84 @@
 "use client"
 import { useState, useMemo, useEffect } from "react"
-import { catalog as baseCatalog } from "@/lib/catalog"
-
-type AnyProduct = any
+import { catalog as baseCatalog, categoryNames, subCategoriesMap } from "@/lib/catalog"
 
 export default function Storefront(){
-  const [allProducts,setAllProducts]=useState<AnyProduct[]>(baseCatalog)
-  const [cat,setCat]=useState("Autre")
-  const [show,setShow]=useState(20)
+  const [cat,setCat]=useState("8) Autre")
+  const [sub,setSub]=useState("All")
   const [search,setSearch]=useState("")
+  const [show,setShow]=useState(30)
+  const [allProducts,setAllProducts]=useState<any[]>(baseCatalog)
 
   useEffect(()=>{
-    const saved = localStorage.getItem("king_store_autre")
+    const saved=localStorage.getItem("king_store_autre")
     if(saved){
       try{
-        const autreProducts = JSON.parse(saved).map((p:any)=>({...p, subCategory:"Autre", brand:"KING", rating:"5.0", reviews:1, video:"", price:p.priceUSD*129}))
-        setAllProducts([...autreProducts, ...baseCatalog])
+        const autres=JSON.parse(saved).map((p:any)=>({id:p.id,name:p.name,brand:"KING",category:"8) Autre",subCategory:"Autre",priceUSD:p.priceUSD,image:p.image,video:"",rating:"5.0",reviews:1}))
+        setAllProducts([...autres,...baseCatalog])
       }catch{}
     }
   },[])
 
-  const categoryNames = ["Autre","Électronique","Électroménager","Éclairage","Construction","Habillement & Maison","Voitures & Motos","Cosmétiques & Soins","Matériel Scolaire & Ménage"]
-
+  const subs = useMemo(()=> cat==="8) Autre" ? ["Autre"] : Object.keys((subCategoriesMap as any)[cat] || {}),[cat])
+  
   const filtered = useMemo(()=>{
     let f=allProducts
-    if(search) f=f.filter((p:any)=>p.name.toLowerCase().includes(search.toLowerCase()))
+    if(search) f=f.filter(p=>p.name.toLowerCase().includes(search.toLowerCase()))
     else {
-      if(cat==="Autre") f=f.filter((p:any)=>p.category==="Autre" || p.subCategory==="Autre")
-      else f=f.filter((p:any)=>p.category===cat)
+      f=f.filter(p=>p.category===cat)
+      if(sub!=="All") f=f.filter(p=>p.subCategory===sub)
     }
     return f
-  },[cat,search,allProducts])
-
-  const isAutreEmpty = cat==="Autre" && filtered.length===0
+  },[cat,sub,search,allProducts])
 
   return(
     <div className="min-h-screen bg-[#f5f5f5] text-black max-w-[500px] mx-auto pb-20">
       <div className="sticky top-0 z-30 bg-white border-b">
         <div className="p-2 flex gap-2">
-          <div className="flex-1 flex items-center gap-2 bg-[#f2f2f2] rounded-full px-3 py-2">
+          <div className="flex-1 bg-[#f2f2f2] rounded-full px-3 py-2 flex items-center gap-2">
             <span>🔍</span>
             <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Search..." className="flex-1 bg-transparent outline-none text-sm" />
           </div>
-          <a href="/admin" className="bg-yellow-400 text-black text-xs font-black px-3 py-2 rounded-full flex items-center">+ PUBLIER</a>
+          <a href="/admin" className="bg-yellow-400 text-black text-[11px] font-black px-3 py-2 rounded-full">+ AUTRE</a>
         </div>
         <div className="flex gap-2 overflow-x-auto px-2 py-2">
           {categoryNames.map(c=>(
-            <button key={c} onClick={()=>{setCat(c); setShow(20)}} className={`whitespace-nowrap text-[12px] px-3 py-1.5 rounded-full border font-bold ${cat===c?"bg-black text-yellow-400 border-black":"bg-white text-gray-600"}`}>{c} {c==="Autre" ? `(${allProducts.filter((p:any)=>p.category==="Autre"||p.subCategory==="Autre").length})` : ""}</button>
+            <button key={c} onClick={()=>{setCat(c); setSub("All"); setShow(30)}} className={`whitespace-nowrap text-[11px] px-3 py-1.5 rounded-full border font-bold ${cat===c?"bg-black text-yellow-400 border-black":"bg-white text-gray-600"}`}>{c}</button>
+          ))}
+        </div>
+        <div className="flex gap-2 overflow-x-auto px-2 pb-2">
+          <button onClick={()=>setSub("All")} className={`text-[10px] px-2 py-1 rounded ${sub==="All"?"bg-yellow-400 font-bold":"bg-gray-100"}`}>All ({filtered.length})</button>
+          {subs.map(s=>(
+            <button key={s} onClick={()=>{setSub(s); setShow(30)}} className={`whitespace-nowrap text-[10px] px-2 py-1 rounded ${sub===s?"bg-yellow-400 font-bold":"bg-gray-100"}`}>{s}</button>
           ))}
         </div>
       </div>
 
-      <div className="bg-black text-yellow-400 p-2 text-[11px] font-bold flex justify-between">
-        <span>👑 CATÉGORIE: {cat.toUpperCase()} - ${" "} DOLLAR</span>
-        <span>{filtered.length} produits</span>
-      </div>
+      <div className="bg-black text-yellow-400 p-2 text-[10px] font-bold">📖 CAHIER: {cat} {sub!=="All" ? `> ${sub}` : ""} - {filtered.length} produits - $ DOLLAR</div>
 
-      {isAutreEmpty ? (
-        <div className="bg-white m-3 p-10 rounded-xl text-center">
-          <p className="text-5xl mb-3">📦</p>
-          <p className="font-black text-sm">Catégorie AUTRE vide</p>
-          <p className="text-xs text-gray-500 mt-2">C'est toi qui publies ici KING!<br/>Clique en haut + PUBLIER pour ajouter ton premier produit.</p>
-          <a href="/admin" className="inline-block mt-4 bg-yellow-400 text-black font-black px-6 py-3 rounded-xl text-sm">+ PUBLIER MON PREMIER PRODUIT</a>
+      {cat==="8) Autre" && filtered.filter(p=>p.category==="8) Autre").length===0 && !search ? (
+        <div className="bg-white m-3 p-8 rounded-xl text-center">
+          <p className="text-4xl">📦</p>
+          <p className="font-black mt-2">CATEGORIE AUTRE - VIDE</p>
+          <p className="text-xs text-gray-500 mt-1">C'est toi qui publies ici KING!<br/>Clique + AUTRE en haut</p>
+          <a href="/admin" className="inline-block mt-4 bg-yellow-400 text-black font-black px-6 py-3 rounded-xl text-sm">+ PUBLIER DANS AUTRE</a>
         </div>
       ) : (
         <div className="grid grid-cols-2 gap-[1px] bg-[#e0e0e0]">
           {filtered.slice(0,show).map((p:any)=>(
             <div key={p.id} className="bg-white p-2">
-              <img src={p.image} alt={p.name} className="w-full h-[140px] object-cover rounded" />
-              <p className="text-[10px] text-gray-400 uppercase">{p.category}</p>
-              <p className="text-[11px] mt-1 line-clamp-2 h-8 font-bold">{p.name}</p>
-              <p className="font-black text-[14px] mt-1">$ {(p.priceUSD || p.price/129 || 0).toFixed ? `$ ${(p.priceUSD||p.price/129).toFixed(2)}` : `$ ${p.priceUSD}`}</p>
-              <button className="w-full mt-2 bg-yellow-400 text-black text-[11px] font-bold py-1.5 rounded">+ Ajouter</button>
+              <img src={p.image} alt={p.name} className="w-full h-[130px] object-cover rounded" />
+              <p className="text-[9px] text-gray-400 mt-1">{p.subCategory}</p>
+              <p className="text-[11px] font-bold line-clamp-2 h-8">{p.name}</p>
+              <p className="font-black text-[13px] mt-1">$ {p.priceUSD.toFixed ? p.priceUSD.toFixed(2) : p.priceUSD}</p>
+              <p className="text-[10px] text-orange-500">★ {p.rating}</p>
+              <button className="w-full mt-1 bg-yellow-400 text-black text-[10px] font-bold py-1 rounded">+ Ajouter</button>
             </div>
           ))}
         </div>
       )}
 
-      {filtered.length>show && <div className="flex justify-center p-4 bg-white"><button onClick={()=>setShow(s=>s+40)} className="border px-6 py-2 rounded-full text-sm">Voir plus ({filtered.length-show})</button></div>}
+      {filtered.length>show && <div className="flex justify-center p-4 bg-white"><button onClick={()=>setShow(s=>s+40)} className="border px-6 py-2 rounded-full text-xs">Voir plus ({filtered.length-show})</button></div>}
     </div>
   )
 }
