@@ -4,9 +4,6 @@ const CATS = ["1) Electronique","2) Beauty","3) Habillement","4) Mecanique","5) 
 const PRODUCTS = [
   {id:1,name:"Toyota Corolla 2018",cat:"4) Mecanique",price:8500,img:"https://picsum.photos/seed/corolla/400/400"},
   {id:2,name:"VW Golf 7",cat:"4) Mecanique",price:8000,img:"https://picsum.photos/seed/golf/400/400"},
-  {id:3,name:"Bajaj Boxer",cat:"4) Mecanique",price:1100,img:"https://picsum.photos/seed/boxer/400/400"},
-  {id:4,name:"iPhone 15 Pro",cat:"1) Electronique",price:1199,img:"https://picsum.photos/seed/iphone/400/400"},
-  {id:5,name:"Dior Sauvage",cat:"2) Beauty",price:95,img:"https://picsum.photos/seed/dior/400/400"},
 ]
 export default function Page(){
   const [cat,setCat]=useState(CATS[0])
@@ -15,7 +12,7 @@ export default function Page(){
     <div style={{maxWidth:500,margin:"0 auto",background:"#fff",minHeight:"100vh"}}>
       <div style={{background:"#000",color:"#facc15",padding:12,textAlign:"center",fontWeight:900}}>👑 KING SHIPPING - VERT FINAL</div>
       <div style={{display:"flex",gap:6,overflowX:"auto",padding:8}}>{CATS.map((c:string)=><button key={c} onClick={()=>setCat(c)} style={{whiteSpace:"nowrap",padding:"8px 12px",borderRadius:20,fontSize:11,fontWeight:900,border:"1px solid #000",background:cat===c?"#000":"#fff",color:cat===c?"#facc15":"#000"}}>{c}</button>)}</div>
-      <div style={{background:"#facc15",padding:8,fontWeight:700}}>📍 {cat} = {filtered.length} produits</div>
+      <div style={{background:"#facc15",padding:8,fontWeight:700}}>📍 {cat} = {filtered.length}</div>
       <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:4,background:"#ddd"}}>{filtered.map(p=><div key={p.id} style={{background:"#fff",padding:8}}><img src={p.img} style={{width:"100%",height:128,objectFit:"cover"}}/><p style={{fontSize:12,fontWeight:700}}>{p.name}</p><p style={{fontWeight:900}}>${p.price}</p></div>)}</div>
     </div>
   )
