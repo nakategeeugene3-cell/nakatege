@@ -1,52 +1,39 @@
 "use client"
-import { useState, useMemo, useEffect } from "react"
-import { catalog as baseCatalog, categoryNames } from "@/lib/catalog"
-
+import { useState } from "react"
+const CATS = ["1) Electronique","2) Beauty","3) Habillement","4) Mecanique","5) Matelas & Drap","6) Accessoire Sport et Sante","7) Construction & Securite","8) Autre"]
+const PRODUCTS = [
+  {id:1,name:"Toyota Corolla 2018",cat:"4) Mecanique",price:8500,img:"https://picsum.photos/seed/corolla/400/400"},
+  {id:2,name:"VW Golf 7 2018",cat:"4) Mecanique",price:8000,img:"https://picsum.photos/seed/golf/400/400"},
+  {id:3,name:"BMW Serie 3 2017",cat:"4) Mecanique",price:11000,img:"https://picsum.photos/seed/bmw/400/400"},
+  {id:4,name:"Bajaj Boxer 150",cat:"4) Mecanique",price:1100,img:"https://picsum.photos/seed/boxer/400/400"},
+  {id:5,name:"iPhone 15 Pro Max",cat:"1) Electronique",price:1199,img:"https://picsum.photos/seed/iphone/400/400"},
+  {id:6,name:"Frigo Samsung 200L",cat:"1) Electronique",price:450,img:"https://picsum.photos/seed/frigo/400/400"},
+  {id:7,name:"Dior Sauvage 100ml",cat:"2) Beauty",price:95,img:"https://picsum.photos/seed/dior/400/400"},
+  {id:8,name:"Robe Ankara Femme",cat:"3) Habillement",price:35,img:"https://picsum.photos/seed/ankara/400/400"},
+]
 export default function Page(){
   const [cat,setCat]=useState("1) Electronique")
-  const [all,setAll]=useState<any[]>([])
-
-  useEffect(()=>{
-    let produits = baseCatalog
-    try{
-      const s=localStorage.getItem("king_store_autre")
-      if(s){
-        const a=JSON.parse(s).map((p:any)=>({id:p.id,name:p.name,brand:"KING",category:"8) Autre",subCategory:"Autre",priceUSD:p.priceUSD,image:p.image,rating:"5.0",reviews:1}))
-        produits = [...a,...baseCatalog]
-      }
-    }catch{}
-    setAll(produits)
-    if(produits.length===0) setAll(baseCatalog)
-  },[])
-
-  const filtered = useMemo(()=> all.filter(p=>p.category===cat),[cat,all])
-
+  const filtered = PRODUCTS.filter(p=>p.cat===cat)
   return(
-    <div className="min-h-screen bg-[#f5f5f5] text-black max-w-[500px] mx-auto pb-20">
-      <div className="bg-black text-yellow-400 p-3 font-black text-center">👑 KING SHIPPING - TON CAHIER 8 CATEGORIES</div>
-      <div className="sticky top-0 z-30 bg-white border-b">
-        <div className="p-2 flex gap-2">
-          <div className="flex-1 bg-gray-100 rounded-full px-3 py-2 text-xs">🔍 {cat} - {filtered.length} produits</div>
-          <a href="/admin" className="bg-yellow-400 text-black font-black px-4 py-2 rounded-full text-xs">+ AUTRE</a>
-        </div>
-        <div className="flex gap-1 overflow-x-auto px-2 py-2">
-          {categoryNames.map((c:any)=>(
-            <button key={c} onClick={()=>setCat(c)} className={`whitespace-nowrap px-3 py-2 rounded-full text-[11px] font-black border ${cat===c?"bg-black text-yellow-400":"bg-white"}`}>{c}</button>
-          ))}
-        </div>
-        <div className="bg-black text-yellow-400 text-[11px] p-2 font-bold">📍 TU ES: {cat} = {filtered.length} PRODUITS</div>
+    <div className="min-h-screen bg-white text-black max-w-[500px] mx-auto">
+      <div className="bg-black text-yellow-400 p-3 font-black text-center">👑 KING SHIPPING - 8 CATEGORIES</div>
+      <div className="flex gap-1 overflow-x-auto p-2 bg-white sticky top-0 border-b z-10">
+        {CATS.map(c=>(
+          <button key={c} onClick={()=>setCat(c)} className={`whitespace-nowrap px-3 py-2 rounded-full text-[11px] font-black border ${cat===c?"bg-black text-yellow-400":"bg-white"}`}>{c}</button>
+        ))}
       </div>
+      <div className="bg-yellow-400 text-black p-2 text-xs font-bold">📍 TU ES: {cat} = {filtered.length} PRODUITS</div>
       <div className="grid grid-cols-2 gap-1 bg-gray-200">
-        {filtered.slice(0,100).map((p:any)=>(
+        {filtered.map(p=>(
           <div key={p.id} className="bg-white p-2">
-            <img src={p.image} className="w-full h-32 object-cover rounded"/>
-            <p className="text-[10px] bg-black text-white inline-block px-1 rounded mt-1">{p.subCategory}</p>
-            <p className="text-xs font-bold mt-1 line-clamp-2 h-8">{p.name}</p>
-            <p className="font-black">$ {p.priceUSD}</p>
+            <img src={p.img} className="w-full h-32 object-cover rounded" alt={p.name}/>
+            <p className="text-xs font-bold mt-1">{p.name}</p>
+            <p className="font-black">$ {p.price}</p>
           </div>
         ))}
       </div>
-      {filtered.length===0 && <div className="p-10 text-center bg-white m-3 rounded-xl"><p className="text-4xl">📦</p><p className="font-bold mt-2">{cat} VIDE - Clique + AUTRE</p></div>}
+      {filtered.length===0 && <div className="p-10 text-center bg-white"><p className="text-4xl">📦</p><p className="font-bold">{cat} VIDE</p></div>}
+      <div className="p-4 text-center"><a href="/admin" className="bg-black text-yellow-400 px-6 py-3 rounded-full font-black text-sm">→ PUBLIER DANS AUTRE</a></div>
     </div>
   )
 }
