@@ -9,13 +9,13 @@ const PRODUCTS = [
   {id:5,name:"Dior Sauvage",cat:"2) Beauty",price:95,img:"https://picsum.photos/seed/dior/400/400"},
 ]
 export default function Page(){
-  const [cat,setCat]=useState<string>(CATS[0])
+  const [cat,setCat]=useState(CATS[0])
   const filtered = PRODUCTS.filter((p)=>p.cat===cat)
   return(
     <div style={{maxWidth:500,margin:"0 auto",background:"#fff",minHeight:"100vh"}}>
       <div style={{background:"#000",color:"#facc15",padding:12,textAlign:"center",fontWeight:900}}>👑 KING SHIPPING - VERT FINAL</div>
       <div style={{display:"flex",gap:6,overflowX:"auto",padding:8}}>{CATS.map((c:string)=><button key={c} onClick={()=>setCat(c)} style={{whiteSpace:"nowrap",padding:"8px 12px",borderRadius:20,fontSize:11,fontWeight:900,border:"1px solid #000",background:cat===c?"#000":"#fff",color:cat===c?"#facc15":"#000"}}>{c}</button>)}</div>
-      <div style={{background:"#facc15",padding:8,fontWeight:700}}>📍 TU ES: {cat} = {filtered.length}</div>
+      <div style={{background:"#facc15",padding:8,fontWeight:700}}>📍 {cat} = {filtered.length} produits</div>
       <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:4,background:"#ddd"}}>{filtered.map(p=><div key={p.id} style={{background:"#fff",padding:8}}><img src={p.img} style={{width:"100%",height:128,objectFit:"cover"}}/><p style={{fontSize:12,fontWeight:700}}>{p.name}</p><p style={{fontWeight:900}}>${p.price}</p></div>)}</div>
     </div>
   )
