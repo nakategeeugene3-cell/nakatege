@@ -3,7 +3,45 @@ import { useState, useMemo, useEffect, useRef } from "react"
 import Link from "next/link"
 import { produits as allProduits } from "../lib/db"
 
-const currencies35 = ["USD $","KES KSh","EUR €","GBP £","NGN ₦","ZAR R","UGX USh","TZS TSh","RWF RF","ETB Br","EGP E£","MAD DH","DZD DA","XOF CFA","XAF CFA","GHS ₵","INR ₹","CNY ¥","JPY ¥","KRW ₩","AED AED","SAR SAR","TRY ₺","BRL R$","CAD C$","AUD A$","CHF CHF","SEK kr","NOK kr","DKK kr","PLN zł","RUB ₽","PKR ₨","BDT ৳","IDR Rp"]
+// TAUX DE CHANGE - BASE USD
+const rates: any = {
+  "USD $": 1,
+  "KES KSh": 129.5,
+  "EUR €": 0.92,
+  "GBP £": 0.79,
+  "NGN ₦": 1600,
+  "ZAR R": 18.5,
+  "UGX USh": 3850,
+  "TZS TSh": 2680,
+  "RWF RF": 1280,
+  "ETB Br": 57,
+  "EGP E£": 50.5,
+  "MAD DH": 10.1,
+  "DZD DA": 135,
+  "XOF CFA": 605,
+  "XAF CFA": 605,
+  "GHS ₵": 15.5,
+  "INR ₹": 83.5,
+  "CNY ¥": 7.24,
+  "JPY ¥": 155,
+  "KRW ₩": 1350,
+  "AED AED": 3.67,
+  "SAR SAR": 3.75,
+  "TRY ₺": 32.5,
+  "BRL R$": 5.2,
+  "CAD C$": 1.36,
+  "AUD A$": 1.52,
+  "CHF CHF": 0.91,
+  "SEK kr": 10.9,
+  "NOK kr": 10.8,
+  "DKK kr": 6.86,
+  "PLN zł": 4.02,
+  "RUB ₽": 92,
+  "PKR ₨": 278,
+  "BDT ৳": 117,
+  "IDR Rp": 16200
+}
+const currencies35 = Object.keys(rates)
 const categories12 = ["All","Phones","Laptops","Shoes","Watches","Fashion","Electronics","Gaming","Home","Beauty","Sports","Kids"]
 
 export default function KingShopFinal(){
@@ -33,13 +71,26 @@ export default function KingShopFinal(){
     const t=setTimeout(()=>setVideoTimer(videoTimer-1),1000)
     return ()=>clearTimeout(t)
   },[step,videoTimer,videoIndex,form])
+
   const handlePhoto=(e:any)=>{ const f=e.target.files?.[0]; if(f) setForm({...form,photo:URL.createObjectURL(f)}) }
+
+  // MICRO GOOGLE - COMME GOOGLE
   const startMic=()=>{
     const SR = (window as any).webkitSpeechRecognition || (window as any).SpeechRecognition
-    if(!SR){ alert("Use Chrome"); return }
+    if(!SR){ alert("Use Chrome for voice search"); return }
     const rec=new SR(); rec.lang="fr-FR"; rec.onstart=()=>setListening(true); rec.onend=()=>setListening(false)
     rec.onresult=(e:any)=>setSearch(e.results[0][0].transcript); rec.start()
   }
+
+  // CONVERTIR PRIX USD -> DEVISE SELECTIONNEE
+  const convertPrice = (usd: number) => {
+    const rate = rates[selectedCurrency] || 1
+    const converted = usd * rate
+    // Arrondi propre
+    if(converted >= 1000) return Math.round(converted).toLocaleString()
+    return converted.toFixed(2)
+  }
+
   const filtered = useMemo(()=>{
     let l=allProduits
     if(search) l=l.filter(p=>p.name.toLowerCase().includes(search.toLowerCase()))
@@ -62,24 +113,54 @@ export default function KingShopFinal(){
     <div style={{maxWidth:480,margin:"0 auto",background:"#fff",minHeight:"100vh",fontFamily:"sans-serif",paddingBottom:90}}>
       <div style={{position:"fixed",top:0,left:"50%",transform:"translateX(-50%)",width:"100%",maxWidth:480,zIndex:100,background:"#000",padding:"8px 10px",display:"flex",justifyContent:"space-between",alignItems:"center"}}><b style={{fontSize:11,color:"#fff"}}>KINGSHOP.CO.KE</b><button onClick={()=>setShowCurrency(!showCurrency)} style={{background:"#222",color:"#fff",border:"none",padding:"5px 10px",borderRadius:10,fontSize:8}}>{selectedCurrency} ▼</button></div>
       <div style={{height:42}}></div>
-      {showCurrency && <div style={{margin:"0 10px",background:"#fff",border:"1px solid #ddd",borderRadius:10,padding:10}}><div style={{display:"flex",flexWrap:"wrap",gap:5}}>{currencies35.map(c=><button key={c} onClick={()=>{setSelectedCurrency(c); setShowCurrency(false)}} style={{background:selectedCurrency===c?"#000":"#f2f2f7",color:selectedCurrency===c?"#fff":"#000",border:"none",padding:"6px 8px",borderRadius:8,fontSize:8}}>{c}</button>)}</div></div>}
-      <div style={{padding:"8px 10px"}}><div style={{display:"flex",alignItems:"center",border:"1px solid #ddd",borderRadius:30,padding:"5px 6px 5px 12px",background:"#fff"}}><button onClick={()=>fileRef.current?.click()} style={{border:"none",background:"transparent",fontSize:18}}>📷</button><input ref={fileRef} type="file" accept="image/*" style={{display:"none"}}/><input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Search products" style={{flex:1,border:"none",outline:"none",marginLeft:8,fontSize:12,color:"#000"}}/><button onClick={startMic} style={{border:"none",background:listening?"#ff0000":"transparent",width:34,height:34,borderRadius:17,display:"flex",alignItems:"center",justifyContent:"center",fontSize:18}}>{listening?"🔴":"🎤"}</button><button style={{background:"#000",color:"#fff",border:"none",padding:"8px 14px",borderRadius:20,fontSize:9,fontWeight:700,marginLeft:4}}>Search</button></div></div>
-      <div style={{margin:"0 10px",display:"flex",alignItems:"center",gap:8,background:"#f2f2f7",borderRadius:10,padding:8}}><img src={clientUser.photo} style={{width:30,height:30,borderRadius:15,objectFit:"cover"}}/><div style={{fontSize:9,fontWeight:700}}>{clientUser.pseudo}</div></div>
-      <Link href="/categories" style={{textDecoration:"none"}}><div style={{margin:"8px 10px",background:"#000",borderRadius:10,padding:12,display:"flex",justifyContent:"space-between",alignItems:"center"}}><div><div style={{fontSize:12,fontWeight:900,color:"#ffcc00"}}>PUBLICITÉ</div><div style={{fontSize:8,color:"#fff"}}>King Shipping - 50% OFF</div></div><div style={{color:"#fff"}}>➡️</div></div></Link>
+      
+      {showCurrency && (
+        <div style={{margin:"0 10px",background:"#fff",border:"2px solid #000",borderRadius:12,padding:10,zIndex:50}}>
+          <div style={{fontSize:9,fontWeight:700,marginBottom:8}}>Select currency - Prices will convert:</div>
+          <div style={{display:"flex",flexWrap:"wrap",gap:6}}>{currencies35.map(c=><button key={c} onClick={()=>{setSelectedCurrency(c); setShowCurrency(false)}} style={{background:selectedCurrency===c?"#000":"#f2f2f7",color:selectedCurrency===c?"#fff":"#000",border:selectedCurrency===c?"2px solid #ffcc00":"1px solid #ddd",padding:"7px 10px",borderRadius:8,fontSize:8,fontWeight:700}}>{c}</button>)}</div>
+          <div style={{marginTop:8,fontSize:8,color:"#666"}}>Base: USD $ - Example: $1000 = {convertPrice(1000)} {selectedCurrency}</div>
+        </div>
+      )}
+
+      <div style={{padding:"8px 10px"}}>
+        <div style={{display:"flex",alignItems:"center",border:"1px solid #ddd",borderRadius:30,padding:"4px 5px 4px 12px",background:"#fff",boxShadow:"0 1px 3px rgba(0,0,0,0.1)"}}>
+          <button onClick={()=>fileRef.current?.click()} style={{border:"none",background:"transparent",fontSize:18}}>📷</button>
+          <input ref={fileRef} type="file" accept="image/*" style={{display:"none"}}/>
+          <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Search products" style={{flex:1,border:"none",outline:"none",marginLeft:8,fontSize:12,color:"#000"}}/>
+          
+          {/* MICRO GOOGLE - COULEUR GOOGLE - COMME TU DIS */}
+          <button onClick={startMic} style={{border:"none",background:listening?"#fce8e6":"#f8f9fa",width:36,height:36,borderRadius:18,display:"flex",alignItems:"center",justifyContent:"center",marginLeft:4,cursor:"pointer",boxShadow:listening?"0 0 0 3px #fbbc04":"none"}}>
+            {listening ? (
+              <span style={{fontSize:16}}>🔴</span>
+            ) : (
+              <svg width="20" height="20" viewBox="0 0 24 24"><path fill="#4285F4" d="M12 14a3.5 3.5 0 0 0 3.5-3.5V6a3.5 3.5 0 0 0-7 0v4.5A3.5 3.5 0 0 0 12 14z"/><path fill="#34A853" d="M17 11a5 5 0 0 1-10 0H5a7 7 0 0 0 14 0h-2z"/><path fill="#FBBC05" d="M12 19v3"/><path fill="#EA4335" d="M11 19h2v3h-2z"/></svg>
+            )}
+          </button>
+          
+          <button style={{background:"#000",color:"#fff",border:"none",padding:"8px 16px",borderRadius:20,fontSize:10,fontWeight:700,marginLeft:4}}>Search</button>
+        </div>
+        {listening && <div style={{textAlign:"center",fontSize:9,color:"#EA4335",marginTop:4,fontWeight:700}}>🎤 Listening... Parle maintenant!</div>}
+      </div>
+
+      <div style={{margin:"0 10px",display:"flex",alignItems:"center",gap:8,background:"#f2f2f7",borderRadius:10,padding:8}}><img src={clientUser.photo} style={{width:30,height:30,borderRadius:15,objectFit:"cover"}}/><div style={{fontSize:9,fontWeight:700}}>{clientUser.pseudo}</div><div style={{marginLeft:"auto",fontSize:8,background:"#000",color:"#fff",padding:"3px 8px",borderRadius:10}}>{selectedCurrency}</div></div>
+
+      <Link href="/categories" style={{textDecoration:"none"}}><div style={{margin:"8px 10px",background:"#000",borderRadius:10,padding:12,display:"flex",justifyContent:"space-between",alignItems:"center"}}><div><div style={{fontSize:12,fontWeight:900,color:"#ffcc00"}}>PUBLICITÉ</div><div style={{fontSize:8,color:"#fff"}}>King Shipping - 50% OFF - Click!</div></div><div style={{color:"#fff"}}>➡️</div></div></Link>
+
       <div style={{margin:"8px 10px"}}><div style={{display:"flex",gap:8,overflowX:"auto",paddingBottom:4,whiteSpace:"nowrap"}}>{categories12.map(c=>(<button key={c} onClick={()=>setCat(c)} style={{flexShrink:0,background:cat===c?"#000":"#f2f2f7",color:cat===c?"#fff":"#000",border:"none",padding:"7px 12px",borderRadius:20,fontSize:9,fontWeight:700}}>{c}</button>))}</div></div>
 
-      {/* TOUS LES PRODUITS - PAS DE VOIR PLUS ICI - COMME TU DIS */}
+      {/* PRODUITS AVEC CONVERSION - PRIX CHANGE SELON MONNAIE */}
       <div style={{margin:10,background:"#f2f2f7",borderRadius:12,padding:10}}>
+        <div style={{fontSize:8,color:"#666",marginBottom:6}}>Prices in {selectedCurrency} - Base USD converted:</div>
         <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:6}}>
           {filtered.map(p=>(
-            <Link key={p.id} href={`/produits/${p.id}`} style={{background:"#fff",borderRadius:10,padding:6,textDecoration:"none",color:"#000",border:"1px solid #eee"}}>
+            <Link key={p.id} href={`/produits/${p.id}?cur=${encodeURIComponent(selectedCurrency)}&rate=${rates[selectedCurrency]}`} style={{background:"#fff",borderRadius:10,padding:6,textDecoration:"none",color:"#000",border:"1px solid #eee"}}>
               <img src={p.img} style={{width:"100%",height:70,objectFit:"cover",borderRadius:6}}/>
               <div style={{fontSize:8,fontWeight:700,height:20,overflow:"hidden",marginTop:4}}>{p.name}</div>
-              <div style={{fontSize:11,fontWeight:900}}>${p.price}</div>
+              <div style={{fontSize:11,fontWeight:900,color:selectedCurrency==="USD $"?"#000":"#00a651"}}>{convertPrice(p.price)} {selectedCurrency.split(" ")[1] || selectedCurrency.split(" ")[0]}</div>
+              {selectedCurrency!=="USD $" && <div style={{fontSize:7,color:"#999",textDecoration:"line-through"}}>${p.price}</div>}
             </Link>
           ))}
         </div>
-        {/* PLUS DE BOUTON VOIR PLUS ICI - DEPLACE DANS PANIER */}
       </div>
 
       <div style={{position:"fixed",bottom:88,right:12,zIndex:200}}><button onClick={()=>setShowAssist(true)} style={{background:"#ffcc00",width:48,height:48,borderRadius:24,border:"2px solid #000",display:"flex",alignItems:"center",justifyContent:"center",fontSize:20}}>🎧</button></div>
